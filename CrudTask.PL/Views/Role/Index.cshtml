@@ -1,0 +1,49 @@
+﻿@model IEnumerable<RoleViewModel>
+
+@{
+    ViewData["Title"] = "Roles";
+    var searchQuery = ViewData["SearchQuery"] as string ?? string.Empty;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4>Roles</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="get" class="mb-4">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Search by role name" value="@searchQuery" />
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+
+                    <table class="table table-bordered table-hover">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var role in Model)
+                            {
+                                <tr>
+                                    <td>@role.Name</td>
+                                    <td class="text-center">
+                                        <a asp-action="Edit" asp-route-id="@role.Id" class="btn btn-sm btn-warning">Edit</a>
+                                        <a asp-action="Details" asp-route-id="@role.Id" class="btn btn-sm btn-info">Details</a>
+                                        <a asp-action="Delete" asp-route-id="@role.Id" class="btn btn-sm btn-danger">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <a asp-action="Create" class="btn btn-primary">Create New Role</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
