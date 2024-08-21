@@ -25,7 +25,7 @@
                         <dd class="col-sm-9">@Model.LastName</dd>
 
                         <dt class="col-sm-3">Roles</dt>
-                        <dd class="col-sm-9">@string.Join(", ", Model.Roles)</dd>
+                        <dd class="col-sm-9">@string.Join(", ", Model.Roles ?? Enumerable.Empty<string>())</dd>
                     </dl>
 
                     <form asp-action="Delete" method="post">

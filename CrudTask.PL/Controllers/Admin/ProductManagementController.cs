@@ -17,10 +17,20 @@ namespace CrudTask.PL.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (!User.IsInRole("Admin"))
+            {
+                return Unauthorized();
+            }
+
             var item = await _repo.GetAllAsync();
             var model = new ProductViewModel
             {
-                Products = item            
+                Products = item
             };
             return View(model);
         }
