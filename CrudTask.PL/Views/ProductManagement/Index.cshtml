@@ -11,7 +11,7 @@
                     <h4>Product List</h4>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered table-hover">
+                    <table id="productTable" class="table table-bordered table-hover">
                         <thead class="bg-light">
                             <tr>
                                 <th>Name</th>
@@ -19,18 +19,30 @@
                                 <th>Price</th>
                                 <th>Quantity</th>
                                 <th>Expiration Date</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model.Products)
                             {
+                                var isExpired = item.ExpirationDate < DateTime.Today;
                                 <tr>
                                     <td>@item.Name</td>
                                     <td>@item.Description</td>
                                     <td>@item.Price.ToString("C")</td>
                                     <td>@item.Quantity</td>
                                     <td>@item.ExpirationDate.ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                        @if (isExpired)
+                                        {
+                                            <span class="badge bg-danger">Due</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">Valid</span>
+                                        }
+                                    </td>
                                     <td class="text-center">
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
@@ -40,6 +52,27 @@
                             }
                         </tbody>
                     </table>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.CurrentPage - 1)">Previous</a>
+                            </li>
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i">@i</a>
+                                </li>
+                            }
+
+                            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.CurrentPage + 1)">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+
                     <div class="text-center mt-4">
                         <a asp-action="Create" class="btn btn-primary">Add New Product</a>
                     </div>
@@ -48,3 +81,4 @@
         </div>
     </div>
 </div>
+

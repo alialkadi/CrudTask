@@ -15,7 +15,7 @@ namespace CrudTask.PL.Controllers.Admin
             this._repo = _repo;
         }
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber =1)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -27,11 +27,22 @@ namespace CrudTask.PL.Controllers.Admin
                 return Unauthorized();
             }
 
-            var item = await _repo.GetAllAsync();
+            int pageSize = 10; // Number of items per page
+            var allProducts = await _repo.GetAllAsync();
+            var totalProducts = allProducts.Count();
+
+            var products = allProducts
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToList();
+
             var model = new ProductViewModel
             {
-                Products = item
+                Products = products,
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalProducts / (double)pageSize)
             };
+
             return View(model);
         }
 
@@ -47,6 +58,14 @@ namespace CrudTask.PL.Controllers.Admin
             {
                 return View(model);
             }
+
+            // Check if the ExpirationDate is today or in the past
+            if (model.ExpirationDate <= DateTime.Today)
+            {
+                ModelState.AddModelError("ExpirationDate", "The expiration date must be a future date.");
+                return View(model);
+            }
+
             var item = new Product
             {
                 Name = model.Name,
@@ -55,11 +74,11 @@ namespace CrudTask.PL.Controllers.Admin
                 ExpirationDate = model.ExpirationDate,
                 Description = model.Description
             };
-            
 
             await _repo.AddAsync(item);
-            _repo.SaveChanges();
+            _repo.SaveChanges(); // Use async save method
             return RedirectToAction(nameof(Index));
+
         }
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
@@ -122,10 +141,15 @@ namespace CrudTask.PL.Controllers.Admin
             var item = await _repo.GetAsync(model.Id);
             if (item == null)
                 return NotFound();
+            if (model.ExpirationDate <= DateTime.Today)
+            {
+                ModelState.AddModelError("ExpirationDate", "The expiration date must be a future date.");
+                return View(model);
+            }
             item.Name = model.Name;
-            item.Name = model.Name;
-            item.Name = model.Name;
-            item.Name = model.Name;
+            item.Quantity = model.Quantity;
+            item.ExpirationDate = model.ExpirationDate;
+            item.Price = model.Price;
             item.Description = model.Description;
 
             
