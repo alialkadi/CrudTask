@@ -160,5 +160,28 @@ namespace CrudTask.PL.Controllers.Admin
             return RedirectToAction("Index");
 
         }
+        // ProductController.cs
+        public async Task<IActionResult> Details(int id)
+        {
+            var product = await _repo.GetAsync(id); // Adjust method as needed to get the product by Id
+
+            if (product == null)
+            {
+                return NotFound(); // Handle case where product is not found
+            }
+
+            var model = new ProductDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Quantity = product.Quantity,
+                ExpirationDate = product.ExpirationDate
+            };
+
+            return View(model);
+        }
+
     }
 }
