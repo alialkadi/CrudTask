@@ -3,16 +3,19 @@ using CrudTask.DAL.Data.Entities;
 using CrudTask.PL.Helpers;
 using CrudTask.PL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace CrudTask.PL.Controllers.Admin
 {
     public class ProductManagementController : Controller
     {
         private readonly IGenericRepository<Product> _repo;
+        private readonly ILogger<ProductManagementController> _logger;
 
-        public ProductManagementController(IGenericRepository<Product> _repo)
+        public ProductManagementController(IGenericRepository<Product> _repo, ILogger<ProductManagementController> _logger)
         {
             this._repo = _repo;
+            this._logger = _logger;
         }
         [HttpGet]
         public async Task<IActionResult> Index(int pageNumber =1)
@@ -179,6 +182,10 @@ namespace CrudTask.PL.Controllers.Admin
                 Quantity = product.Quantity,
                 ExpirationDate = product.ExpirationDate
             };
+
+            //_logger.LogDebug($"Finished the get by it with the id :{id} and moder:{model}");
+
+            Log.Information("Finished the get by it with the id :{@id} and moder:{@model}",id,model);
 
             return View(model);
         }
